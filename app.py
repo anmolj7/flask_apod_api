@@ -1,7 +1,6 @@
 from flask import Flask, send_file, request, render_template, redirect
 import codecs
 from GetImage import get_json_data, Image
-import requests
 from flask_weasyprint import HTML, render_pdf
 
 app = Flask(__name__)
@@ -22,7 +21,7 @@ def download():
     explain = request.form["explain"]
     link = request.form["link"]
     date = request.form["date"]
-    html = f'<html>{title} <img src="{link}" width="40%" height="40%"> {explain}</html>'
+    html = render_template('template.html', title=title, link=link, explain=explain)
     return render_pdf(HTML(string=html), download_filename=f"{date}.pdf")
 
 
@@ -50,5 +49,5 @@ def not_found(e):
 
 
 if __name__ == "__main__":
-    app.run(debug=False, port=6969)
+    app.run(debug=False, port=6998-212-1)
 
