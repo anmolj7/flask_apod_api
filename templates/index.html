@@ -1,44 +1,50 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"
-    integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/"
-    crossorigin="anonymous"></script>
-<style>
-    label {
-        display: block;
-        font: 1rem 'Fira Sans', sans-serif;
-    }
+<html>
 
-    input,
-    label {
-        margin: .4rem 0;
-    }
-</style>
-<div id="content">
-    <h1>Nasa's Astronomy Picture Of The Day</h1>
-    <form method='POST' action="image">
-        <label>Enter The Date: </label>
-        <input id="datefield" type='date' min='1995-06-16' max='2000-13-13' name="date" required="required"></input>
-        <input type="submit">
-    </form>
-</div>
+<head>
+    <title>Nasa APOD</title>
+    <style>
+        label {
+            display: block;
+            font: 1rem 'Fira Sans', sans-serif;
+        }
+
+        input,
+        label {
+            margin: .4rem 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="content">
+        <h1>Nasa's Astronomy Picture Of The Day</h1>
+        <form method='POST' action="image">
+            <label>Enter The Date: </label>
+            <input id="datefield" type='date' min='1995-06-16' max='2000-13-13' name="date" required="required"></input>
+            <input type="submit">
+        </form>
+    </div>
 
 
-<script>
+    <script>
+        //Date validation, to make sure the user doesn't choose the date more than the given current date.
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+        if (mm < 10) {
+            mm = '0' + mm
+        }
 
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth() + 1; //January is 0!
-    var yyyy = today.getFullYear();
-    if (dd < 10) {
-        dd = '0' + dd
-    }
-    if (mm < 10) {
-        mm = '0' + mm
-    }
+        today = yyyy + '-' + mm + '-' + dd;
+        document.getElementById("datefield").setAttribute("max", today);
 
-    today = yyyy + '-' + mm + '-' + dd;
-    document.getElementById("datefield").setAttribute("max", today);
+    </script>
 
-    var date = document.getElementById('datefield').text;
-    console.log(date);
+</body>
 
-</script>
+</html>

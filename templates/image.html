@@ -1,56 +1,62 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js"
-    integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/"
-    crossorigin="anonymous"></script>
+<html>
 
-<div id="content">
-    {{title}}
-    <br>
-    <img src="{{link}}">
-    {{explain}}
-</div>
+<head>
+    <title>Astronomy Picture of the date {{date}} </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
 
-<div id="editor"></div>
+<body>
+    <div id="content">
+        {{title}}
+        <br>
+        <img src="{{link}}">
+        <br>
+        {{explain}}
+    </div>
 
-<input type="submit" onclick="download_pdf()">
+    <div id="editor"></div>
 
-<script>
+    <input type="submit" onclick="download_pdf()">
 
-    function ajax_download(url, data) {
-        var $iframe,
-            iframe_doc,
-            iframe_html;
+    <script>
 
-        if (($iframe = $('#download_iframe')).length === 0) {
-            $iframe = $("<iframe id='download_iframe'" +
-                " style='display: none' src='about:blank'></iframe>"
-            ).appendTo("body");
+        //a kinda async download button which sends post data to /download which converts the current html to pdf
+        //credits for the ajax_download function: https://stackoverflow.com/a/21164120
+        function ajax_download(url, data) {
+            var $iframe,
+                iframe_doc,
+                iframe_html;
+
+            if (($iframe = $('#download_iframe')).length === 0) {
+                $iframe = $("<iframe id='download_iframe'" +
+                    " style='display: none' src='about:blank'></iframe>"
+                ).appendTo("body");
+            }
+
+            iframe_doc = $iframe[0].contentWindow || $iframe[0].contentDocument;
+            if (iframe_doc.document) {
+                iframe_doc = iframe_doc.document;
+            }
+
+            iframe_html = "<html><head></head><body><form method='POST' action='" +
+                url + "'>"
+
+            Object.keys(data).forEach(function (key) {
+                iframe_html += "<input type='hidden' name='" + key + "' value='" + data[key] + "'>";
+
+            });
+
+            iframe_html += "</form></body></html>";
+
+            iframe_doc.open();
+            iframe_doc.write(iframe_html);
+            $(iframe_doc).find('form').submit();
         }
 
-        iframe_doc = $iframe[0].contentWindow || $iframe[0].contentDocument;
-        if (iframe_doc.document) {
-            iframe_doc = iframe_doc.document;
+        function download_pdf() {
+            ajax_download('/download', { 'title': "{{title}}", "link": "{{link}}", "explain": "{{explain}}", "date": "{{date}}" })
         }
+    </script>
+</body>
 
-        iframe_html = "<html><head></head><body><form method='POST' action='" +
-            url + "'>"
-
-        Object.keys(data).forEach(function (key) {
-            iframe_html += "<input type='hidden' name='" + key + "' value='" + data[key] + "'>";
-
-        });
-
-        iframe_html += "</form></body></html>";
-
-        iframe_doc.open();
-        iframe_doc.write(iframe_html);
-        $(iframe_doc).find('form').submit();
-    }
-
-    function download_pdf() {
-        ajax_download('/download', {'title': "{{title}}", "link":"{{link}}", "explain":"{{explain}}", "date": "{{date}}"})
-        // $.post("/download", { link: "{{link}}", title: "{{title}}", explain: "{{explain}}" }), function () {
-        //     window.location.href = '/download';
-        // };
-    }
-</script>
+</html>
